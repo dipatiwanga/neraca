@@ -1,0 +1,10 @@
+{
+    "name": "koperasi/akuntansi",
+    "description": "Sistem Akuntansi Koperasi",
+    "autoload": {
+        "psr-4": {
+            "Core\\": "core/",
+            "App\\": "src/"
+        }
+    }
+}
