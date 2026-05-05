@@ -2,42 +2,50 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title><?= $title ?></title>
+    <title><?= $title ?? 'Tambah User' ?></title>
     <style>
-        body { font-family: sans-serif; padding: 20px; }
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .card { max-width: 500px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 8px; box-sizing: border-box; }
-        .btn-save { padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; border-radius: 3px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn-submit { background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 1em; }
+        .btn-submit:hover { background: #218838; }
+        .back-link { display: block; text-align: center; margin-top: 15px; text-decoration: none; color: #666; }
     </style>
 </head>
 <body>
     <?php require_once __DIR__ . '/../partials/nav.php'; ?>
 
-    <h1>Tambah Pengguna Baru</h1>
+    <div class="card">
+        <h2>Tambah Pengguna Baru</h2>
+        <form action="/users/store" method="POST">
+            <div class="form-group">
+                <label for="name">Nama Lengkap</label>
+                <input type="text" id="name" name="name" required placeholder="Contoh: Budi Santoso">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Alamat Email</label>
+                <input type="email" id="email" name="email" required placeholder="email@contoh.com">
+            </div>
 
-    <form action="/users/store" method="POST" style="max-width: 400px;">
-        <div class="form-group">
-            <label>Nama Lengkap:</label>
-            <input type="text" name="name" required>
-        </div>
-        <div class="form-group">
-            <label>Email:</label>
-            <input type="email" name="email" required>
-        </div>
-        <div class="form-group">
-            <label>Password:</label>
-            <input type="password" name="password" required>
-        </div>
-        <div class="form-group">
-            <label>Role:</label>
-            <select name="role" required>
-                <option value="staff">Staff (Operator)</option>
-                <option value="admin">Administrator (Semua Akses)</option>
-            </select>
-        </div>
-        <button type="submit" class="btn-save">Simpan User</button>
-        <a href="/users" style="margin-left: 10px;">Batal</a>
-    </form>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Minimal 6 karakter">
+            </div>
+
+            <div class="form-group">
+                <label for="role">Hak Akses (Role)</label>
+                <select id="role" name="role" required>
+                    <option value="staff">Staff (Operator)</option>
+                    <option value="admin">Administrator (Full Access)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">Simpan Pengguna</button>
+            <a href="/users" class="back-link">Kembali ke Daftar</a>
+        </form>
+    </div>
 </body>
 </html>
