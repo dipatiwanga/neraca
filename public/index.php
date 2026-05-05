@@ -35,9 +35,12 @@ $router->add('GET',  '/journals/view/{id}', 'App\Controllers\JournalController@s
 $router->add('GET', '/reports/balance-sheet', 'App\Controllers\ReportController@balanceSheet');
 
 // --- RUTE MANAJEMEN USER (Admin Only) ---
-$router->add('GET',  '/users',        'App\Controllers\UserController@index');
-$router->add('GET',  '/users/create', 'App\Controllers\UserController@create');
-$router->add('POST', '/users/store',  'App\Controllers\UserController@store');
+$router->add('GET',  '/users',              'App\Controllers\UserController@index');
+$router->add('GET',  '/users/create',       'App\Controllers\UserController@create');
+$router->add('POST', '/users/store',        'App\Controllers\UserController@store');
+$router->add('GET',  '/users/edit/{id}',    'App\Controllers\UserController@edit');
+$router->add('POST', '/users/update/{id}',  'App\Controllers\UserController@update');
+$router->add('GET',  '/users/delete/{id}',  'App\Controllers\UserController@delete');
 
 // Jalankan routing berdasarkan URL
 $router->dispatch($_SERVER['REQUEST_URI']);

@@ -17,12 +17,12 @@ class UserController extends Controller
 
     public function __construct()
     {
-        // 1. Pastikan sudah login
+        // 1. Proteksi Middleware (Pastikan sudah login)
         AuthMiddleware::handle();
 
-        // 2. Pastikan role adalah admin
+        // 2. Role Constraint (Hanya Admin yang boleh mengelola user)
         if ($_SESSION['user_role'] !== 'admin') {
-            die("Akses Ditolak: Anda bukan Administrator.");
+            die("Akses Ditolak: Anda tidak memiliki izin untuk mengakses halaman ini.");
         }
 
         $this->userModel = new User();
@@ -33,9 +33,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $sql = "SELECT id, name, email, role, created_at FROM users ORDER BY name ASC";
-        $db = \Core\Database::getInstance();
-        $users = $db->query($sql)->resultSet();
+        $users = $this->userModel->getAll();
 
         $this->view('users/index', [
             'title' => 'Manajemen User',
@@ -54,10 +52,15 @@ class UserController extends Controller
     }
 
     /**
-     * Menyimpan user baru
+     * Menyimpan user baru ke database
      */
     public function store()
     {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /users');
+            exit;
+        }
+
         $data = [
             'name' => $_POST['name'],
             'email' => $_POST['email'],
@@ -67,20 +70,78 @@ class UserController extends Controller
 
         // Validasi email unik
         if ($this->userModel->findByEmail($data['email'])) {
-            die("Email sudah terdaftar.");
+            die("Error: Email sudah terdaftar dalam sistem.");
         }
 
-        // Insert ke database (Saya tambahkan field role di model create nantinya)
-        $sql = "INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)";
-        $db = \Core\Database::getInstance();
-        $db->query($sql)
-           ->bind(':name', $data['name'])
-           ->bind(':email', $data['email'])
-           ->bind(':password', $data['password'])
-           ->bind(':role', $data['role'])
-           ->execute();
+        if ($this->userModel->create($data)) {
+            header('Location: /users?status=created');
+            exit;
+        } else {
+            die("Gagal menyimpan data user.");
+        }
+    }
 
-        header('Location: /users');
-        exit;
+    /**
+     * Menampilkan form edit user
+     */
+    public function edit($id)
+    {
+        $user = $this->userModel->findById($id);
+        
+        if (!$user) {
+            die("Error: User tidak ditemukan.");
+        }
+
+        $this->view('users/edit', [
+            'title' => 'Edit User',
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * Memperbarui data user
+     */
+    public function update($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /users');
+            exit;
+        }
+
+        $data = [
+            'name' => $_POST['name'],
+            'email' => $_POST['email'],
+            'role' => $_POST['role']
+        ];
+
+        // Update password hanya jika diisi (logic di Model akan menangani seleksi field)
+        if (!empty($_POST['password'])) {
+            $data['password'] = Auth::hashPassword($_POST['password']);
+        }
+
+        if ($this->userModel->update($id, $data)) {
+            header('Location: /users?status=updated');
+            exit;
+        } else {
+            die("Gagal memperbarui data user.");
+        }
+    }
+
+    /**
+     * Menghapus user
+     */
+    public function delete($id)
+    {
+        // Keamanan: Cegah admin menghapus dirinya sendiri
+        if ($id == $_SESSION['user_id']) {
+            die("Error: Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif.");
+        }
+
+        if ($this->userModel->delete($id)) {
+            header('Location: /users?status=deleted');
+            exit;
+        } else {
+            die("Gagal menghapus user.");
+        }
     }
 }

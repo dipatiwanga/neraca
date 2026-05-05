@@ -33,11 +33,32 @@ class Auth
     }
 
     /**
-     * Mengecek apakah user sudah login (Opsional helper)
+     * Mengecek apakah user adalah Admin
      * @return bool
      */
-    public static function check()
+    public static function isAdmin()
     {
-        return isset($_SESSION['user_id']);
+        return \Core\Session::get('user_role') === 'admin';
+    }
+
+    /**
+     * Mengecek apakah user memiliki izin akses ke modul tertentu
+     * 
+     * @param string $module Nama modul (misal: 'users', 'journals')
+     * @return bool
+     */
+    public static function canAccess($module)
+    {
+        $userRole = \Core\Session::get('user_role');
+
+        // Admin memiliki akses ke semua modul
+        if ($userRole === 'admin') {
+            return true;
+        }
+
+        // Daftar modul yang dibatasi untuk Staff
+        $restrictedForStaff = ['users'];
+
+        return !in_array($module, $restrictedForStaff);
     }
 }
