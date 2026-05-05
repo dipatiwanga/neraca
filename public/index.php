@@ -29,6 +29,7 @@ $router->add('POST', '/accounts/update/{id}', 'App\Controllers\AccountController
 $router->add('GET',  '/journals',        'App\Controllers\JournalController@index');
 $router->add('GET',  '/journals/create', 'App\Controllers\JournalController@create');
 $router->add('POST', '/journals/store',  'App\Controllers\JournalController@store');
+$router->add('GET',  '/journals/view/{id}', 'App\Controllers\JournalController@show');
 
 // --- RUTE LAPORAN ---
 $router->add('GET', '/reports/balance-sheet', 'App\Controllers\ReportController@balanceSheet');

@@ -76,4 +76,11 @@ class Journal
     {
         return $this->db->query("SELECT * FROM {$this->table} ORDER BY date DESC")->resultSet();
     }
+
+    public function getById($id)
+    {
+        return $this->db->query("SELECT * FROM {$this->table} WHERE id = :id")
+                        ->bind(':id', $id)
+                        ->single();
+    }
 }

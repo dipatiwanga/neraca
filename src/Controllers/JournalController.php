@@ -99,4 +99,24 @@ class JournalController extends Controller
             die("Gagal menyimpan jurnal: " . $e->getMessage());
         }
     }
+
+    /**
+     * Menampilkan rincian jurnal berdasarkan ID
+     */
+    public function show($id)
+    {
+        $journal = $this->journalModel->getById($id);
+        if (!$journal) {
+            die("Jurnal tidak ditemukan.");
+        }
+
+        $journalItemModel = new \App\Models\JournalItem();
+        $items = $journalItemModel->getByJournalId($id);
+
+        $this->view('journals/view', [
+            'title' => 'Rincian Jurnal',
+            'journal' => $journal,
+            'items' => $items
+        ]);
+    }
 }
