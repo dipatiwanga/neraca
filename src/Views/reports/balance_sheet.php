@@ -1,99 +1,95 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title><?= $title ?></title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; margin-bottom: 30px; }
-        th, td { border: 1px solid #ddd; padding: 10px; }
-        th { background: #f4f4f4; text-align: left; }
-        .total-row { font-weight: bold; background: #eee; }
-        .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; }
-        .alert-success { color: #3c763d; background-color: #dff0d8; border-color: #d6e9c6; }
-        .alert-warning { color: #8a6d3b; background-color: #fcf8e3; border-color: #faebcc; }
-        nav { margin-bottom: 20px; }
-        nav a { margin-right: 15px; text-decoration: none; color: #007bff; }
-    </style>
-</head>
-<body>
-    <?php require_once __DIR__ . '/../partials/nav.php'; ?>
+<?php require_once __DIR__ . '/../partials/header.php'; ?>
 
-    <h1><?= $title ?></h1>
+<div class="card">
+    <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px double var(--border-color); padding-bottom: 20px;">
+        <h1 style="margin-bottom: 5px;">Laporan Neraca</h1>
+        <div style="color: var(--secondary-color); font-weight: 500;">Per Tanggal: <?= date('d F Y') ?></div>
+    </div>
 
-    <?php if ($validation['status']): ?>
-        <div class="alert alert-success"><?= $validation['message'] ?></div>
-    <?php else: ?>
-        <div class="alert alert-warning"><?= $validation['message'] ?></div>
-    <?php endif; ?>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        
+        <!-- AKTIVA (ASSETS) -->
+        <div>
+            <h3 style="background: #f1f5f9; padding: 10px; border-radius: 6px;">AKTIVA (ASET)</h3>
+            <table style="margin-top: 0;">
+                <thead>
+                    <tr>
+                        <th>Akun</th>
+                        <th style="text-align: right;">Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($data['assets']['items'] as $item): ?>
+                    <tr>
+                        <td><?= $item->code ?> - <?= $item->name ?></td>
+                        <td style="text-align: right;"><?= number_format($item->balance, 2) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+                <tfoot style="font-weight: bold;">
+                    <tr>
+                        <td>TOTAL AKTIVA</td>
+                        <td style="text-align: right; border-top: 2px solid var(--text-color);"><?= number_format($data['assets']['total'], 2) ?></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
 
-    <h3>AKTIVA (ASSETS)</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Kode</th>
-                <th>Nama Akun</th>
-                <th style="text-align: right;">Saldo</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($data['assets']['items'] as $item): ?>
-                <tr>
-                    <td><?= $item->code ?></td>
-                    <td><?= $item->name ?></td>
-                    <td style="text-align: right;"><?= number_format($item->balance, 2) ?></td>
-                </tr>
-            <?php endforeach; ?>
-            <tr class="total-row">
-                <td colspan="2">TOTAL AKTIVA</td>
-                <td style="text-align: right;"><?= number_format($data['assets']['total'], 2) ?></td>
-            </tr>
-        </tbody>
-    </table>
+        <!-- PASIVA (LIABILITIES & EQUITY) -->
+        <div>
+            <h3 style="background: #f1f5f9; padding: 10px; border-radius: 6px;">PASIVA (KEWAJIBAN & MODAL)</h3>
+            
+            <label style="display: block; font-weight: 600; margin: 15px 0 5px 0;">Kewajiban</label>
+            <table style="margin-top: 0;">
+                <tbody>
+                    <?php foreach ($data['liabilities']['items'] as $item): ?>
+                    <tr>
+                        <td><?= $item->code ?> - <?= $item->name ?></td>
+                        <td style="text-align: right;"><?= number_format($item->balance, 2) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <tr style="font-weight: 600; font-style: italic;">
+                        <td>Subtotal Kewajiban</td>
+                        <td style="text-align: right;"><?= number_format($data['liabilities']['total'], 2) ?></td>
+                    </tr>
+                </tbody>
+            </table>
 
-    <h3>KEWAJIBAN & MODAL</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Kode</th>
-                <th>Nama Akun</th>
-                <th style="text-align: right;">Saldo</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><th colspan="3">Kewajiban (Liabilities)</th></tr>
-            <?php foreach ($data['liabilities']['items'] as $item): ?>
-                <tr>
-                    <td><?= $item->code ?></td>
-                    <td><?= $item->name ?></td>
-                    <td style="text-align: right;"><?= number_format($item->balance, 2) ?></td>
-                </tr>
-            <?php endforeach; ?>
-            <tr class="total-row">
-                <td colspan="2">Total Kewajiban</td>
-                <td style="text-align: right;"><?= number_format($data['liabilities']['total'], 2) ?></td>
-            </tr>
+            <label style="display: block; font-weight: 600; margin: 20px 0 5px 0;">Ekuitas (Modal)</label>
+            <table style="margin-top: 0;">
+                <tbody>
+                    <?php foreach ($data['equity']['items'] as $item): ?>
+                    <tr>
+                        <td><?= $item->code ?> - <?= $item->name ?></td>
+                        <td style="text-align: right;"><?= number_format($item->balance, 2) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <tr style="font-weight: 600; font-style: italic;">
+                        <td>Subtotal Ekuitas</td>
+                        <td style="text-align: right;"><?= number_format($data['equity']['total'], 2) ?></td>
+                    </tr>
+                </tbody>
+                <tfoot style="font-weight: bold; font-size: 1.1em; background: #f8fafc;">
+                    <tr>
+                        <td>TOTAL PASIVA</td>
+                        <td style="text-align: right; border-top: 2px solid var(--text-color);"><?= number_format($data['liabilities']['total'] + $data['equity']['total'], 2) ?></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
 
-            <tr><th colspan="3">Modal (Equity)</th></tr>
-            <?php foreach ($data['equity']['items'] as $item): ?>
-                <tr>
-                    <td><?= $item->code ?></td>
-                    <td><?= $item->name ?></td>
-                    <td style="text-align: right;"><?= number_format($item->balance, 2) ?></td>
-                </tr>
-            <?php endforeach; ?>
-            <tr class="total-row">
-                <td colspan="2">Total Modal</td>
-                <td style="text-align: right;"><?= number_format($data['equity']['total'], 2) ?></td>
-            </tr>
+    <!-- Validasi Balance -->
+    <div style="margin-top: 40px; text-align: center;">
+        <?php 
+        $totalAktiva = $data['assets']['total'];
+        $totalPasiva = $data['liabilities']['total'] + $data['equity']['total'];
+        $isBalanced = round($totalAktiva, 2) == round($totalPasiva, 2);
+        ?>
+        <div class="badge <?= $isBalanced ? 'badge-success' : 'badge-danger' ?>" style="padding: 15px 30px; font-size: 1.2em;">
+            Status: <?= $isBalanced ? 'SEIMBANG (BALANCED)' : 'TIDAK SEIMBANG (NOT BALANCED)' ?>
+        </div>
+    </div>
+</div>
 
-            <tr class="total-row" style="background: #333; color: #fff;">
-                <td colspan="2">TOTAL KEWAJIBAN + MODAL</td>
-                <td style="text-align: right;"><?= number_format($data['liabilities']['total'] + $data['equity']['total'], 2) ?></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <p><button onclick="window.print()">Cetak Laporan</button></p>
-</body>
-</html>
+<?php require_once __DIR__ . '/../partials/footer.php'; ?>

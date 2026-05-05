@@ -1,21 +1,10 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title><?= $title ?? 'Daftar Akun' ?></title>
-    <style>
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .btn { padding: 5px 10px; text-decoration: none; background: #007bff; color: white; border-radius: 3px; }
-        .btn-add { background: #28a745; margin-bottom: 10px; display: inline-block; }
-    </style>
-</head>
-<body>
-    <?php require_once __DIR__ . '/../partials/nav.php'; ?>
-    <h1><?= $title ?? 'Chart of Accounts (COA)' ?></h1>
-    
-    <a href="/accounts/create" class="btn btn-add">+ Tambah Akun Baru</a>
+<?php require_once __DIR__ . '/../partials/header.php'; ?>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1><?= $title ?? 'Chart of Accounts (COA)' ?></h1>
+        <a href="/accounts/create" class="btn btn-success">+ Tambah Akun Baru</a>
+    </div>
 
     <table>
         <thead>
@@ -31,12 +20,14 @@
             <?php if (!empty($accounts)): ?>
                 <?php foreach ($accounts as $acc): ?>
                     <tr>
-                        <td><?= htmlspecialchars($acc->code) ?></td>
+                        <td><strong><?= htmlspecialchars($acc->code) ?></strong></td>
                         <td><?= htmlspecialchars($acc->name) ?></td>
-                        <td><?= ucfirst(htmlspecialchars($acc->type)) ?></td>
+                        <td>
+                            <span class="badge badge-primary"><?= ucfirst(htmlspecialchars($acc->type)) ?></span>
+                        </td>
                         <td><?= $acc->parent_id ?: '-' ?></td>
                         <td>
-                            <a href="/accounts/edit/<?= $acc->id ?>" class="btn">Edit</a>
+                            <a href="/accounts/edit/<?= $acc->id ?>" class="btn btn-sm btn-primary">Edit</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -47,7 +38,6 @@
             <?php endif; ?>
         </tbody>
     </table>
+</div>
 
-    <p><a href="/"> kembali ke Home</a></p>
-</body>
-</html>
+<?php require_once __DIR__ . '/../partials/footer.php'; ?>
